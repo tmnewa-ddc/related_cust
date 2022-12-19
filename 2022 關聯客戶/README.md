@@ -40,8 +40,15 @@
 ![alt network_intro](./img/說明/投影圖說明2.drawio.png)
 
 
-
 ---
+
+## 結果:
+
+詳細資料請見: 
+
+- CSV格式: \\tp-fs2\數位發展中心\資料分享區\TmpData\關聯客戶\關聯客戶_prepared.csv
+- parquet格式: \\tp-fs2\數位發展中心\資料分享區\TmpData\關聯客戶\關聯客戶_prepared.parq
+
 
 ### 直接連接Tops
 
