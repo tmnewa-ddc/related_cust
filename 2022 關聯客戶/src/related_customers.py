@@ -213,36 +213,47 @@ nodes_years.iloc[:, 3:].sort_values(['num_byTag', 'clm_rate'], ascending = False
 		   .head(10)\
 		   .to_markdown(os.path.join(PROJECT_PATH, '2022 關聯客戶/data/tops/透過標的物tops.txt'))
 
+# clm_ipolicy > .5 & clm_rate > 1
+nodes_years.query('clm_rate_直接連接 > 1 & clm_ratio_直接連接 > .5').iloc[:, 3:].sort_values(['num_original', 'clm_rate'], ascending = False)\
+		   .head(10).filter(regex = r'(?=num_.*|clm_rate.*|clm_ratio.*)')\
+		   .to_markdown(os.path.join(PROJECT_PATH, '2022 關聯客戶/data/tops/直接連結tops_損率.txt'))
+
+nodes_years.query('clm_rate_通過要保 > 1 & clm_ratio_通過要保 > .5').iloc[:, 3:].sort_values(['num_byAppl', 'clm_rate'], ascending = False)\
+		   .head(10).filter(regex = r'(?=num_.*|clm_rate.*|clm_ratio.*)')\
+		   .to_markdown(os.path.join(PROJECT_PATH, '2022 關聯客戶/data/tops/透過要保tops_損率.txt'))
+
+nodes_years.query('clm_rate_通過標的物 > 1 & clm_ratio_通過標的物 > .5').iloc[:, 3:].sort_values(['num_byTag', 'clm_rate'], ascending = False)\
+		   .head(10).filter(regex = r'(?=num_.*|clm_rate.*|clm_ratio.*)')\
+		   .to_markdown(os.path.join(PROJECT_PATH, '2022 關聯客戶/data/tops/透過標的物tops_損率.txt'))
 
 
-row_stats = profile.loc[row['直接連接'].split(',')][['plyAmt', 'clmAmt', 'ipolicy', 'clmed_iply']].sum()\
-		.assign(clm_rate = lambda x: x['clmAmt'] / x['plyAmt'],
-				clm_ratio = lambda x: x['clmed_iply'] / x['ipolicy'])
+
+
+# 探勘
+iassured = 'fb2a381b17af433e55f0f8ad4cd95bcdf17a3c6e'
+iapplicant = ['2cc8727ff1528464ccb6f8e51ee2a397d8172464',
+       'c2757b6dafba37aec5b7b5da4a9a3eb632c6cbc9']
+holder = []
+for year in range(2017, 2022):
+	car = load_car_data(path_ply, path_iins, year)
+	hth = load_hth_data(path_hth, path_hth_ply, year)
+	# ======================================================= #
+	# 小心了，最後做出來的關聯被保人會不知道是哪個險別來的
+	# ======================================================= #
+	data = pd.concat([car, hth])
+	holder.append(data.query("iapplicant.isin(@iapplicant)"))
+
+df = pd.concat(holder)
+
+df.groupby(['iapplicant', 'iins_type_name'])['iassured'].nunique()
+df['iapplicant'].unique()
+df['ipolicy'].nunique()
+
+
+
+
+
 # %%
-
-# %%
-# 說明用圖
-import matplotlib.pyplot as plt
-
-G_t = nx.Graph()
-G_t.add_edges_from([('1', '1'), ('1', '3'), ('2', '3')])
-pos = graphviz_layout(G_t, prog=r'D:\Graphviz\bin\twopi.exe')
-G_t.nodes()
-
-fig, ax = plt.subplots()
-nx.draw_networkx_edges(
-    G_t,
-    pos=pos,
-    ax=ax,
-    arrows=True,
-    arrowstyle="-",
-    min_source_margin=5,
-    min_target_margin=5,
-)
-
-
-
-
 
 
 
